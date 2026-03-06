@@ -13,21 +13,20 @@ df = pd.DataFrame({
 })
 
 checks = {
-    "row_count":       len(df) >= 1000,
-    "no_null_user_id": df["user_id"].isna().sum() == 0,
-    "no_null_txn_id":  df["transaction_id"].isna().sum() == 0,
-    "unique_txn_ids":  df["transaction_id"].duplicated().sum() == 0,
+    "row_count":       bool(len(df) >= 1000),
+    "no_null_user_id": bool(df["user_id"].isna().sum() == 0),
+    "no_null_txn_id":  bool(df["transaction_id"].isna().sum() == 0),
+    "unique_txn_ids":  bool(df["transaction_id"].duplicated().sum() == 0),
     "valid_amounts":   bool(((df["amount"] > 0) & (df["amount"] < 1000000)).all()),
 }
 
-passed = sum(checks.values())
-total  = len(checks)
+passed = int(sum(checks.values()))
+total  = int(len(checks))
 rate   = round(passed / total * 100, 1)
 
 print("Quality Gate Results:")
 for name, result in checks.items():
-    status = "PASS" if result else "FAIL"
-    print("  {} - {}".format(status, name))
+    print("  {} - {}".format("PASS" if result else "FAIL", name))
 print("Score: {}/{} ({}%)".format(passed, total, rate))
 
 os.makedirs("reports", exist_ok=True)
